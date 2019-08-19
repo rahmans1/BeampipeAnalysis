@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -o /global/scratch/rahmans/tmp/analysis/conf0_5_photon.out
+#PBS -e /global/scratch/rahmans/tmp/analysis/conf0_5_photon.err
+# Script for running target analysis
+cd /home/rahmans/analysis/BeampipeAnalysis/electrons
+echo "Current working directory is `pwd`"
+echo "Node file: $PBS_NODEFILE:"
+echo "-----------------------------"
+cat $PBS_NODEFILE
+echo "-----------------------------"
+CORES=`/bin/awk 'END {print NR}' $PBS_NODEFILE`
+echo "Running on $CORES cores."
+echo "Starting run at: `date`"
+module load root-cern/6.14.04-gcc52 geant4/10.4-p02-threads
+export OMP_NUM_THREADS=$CORES
+LD_PRELOAD=/home/rahmans/remoll-root/remoll_30_01_2019/build-raster/libremoll.so root -q -b -l /home/rahmans/analysis/BeampipeAnalysis/electrons/analyse.C'("conf0",5,"photon")'
+root -q -b -l /home/rahmans/analysis/BeampipeAnalysis/electrons/overlay.C'("conf0",50000,"photon")'
+echo "Program analysis finished with exit code $? at: `date`"

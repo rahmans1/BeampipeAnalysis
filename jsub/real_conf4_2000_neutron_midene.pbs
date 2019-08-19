@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -S /bin/bash
+#PBS -o /global/scratch/rahmans/tmp/analysis/real_conf4_2000_neutron_midene.out
+#PBS -e /global/scratch/rahmans/tmp/analysis/real_conf4_2000_neutron_midene.err
+# Script for running target analysis
+cd /home/rahmans/analysis/BeampipeAnalysis/analyse
+echo "Current working directory is `pwd`"
+echo "Node file: $PBS_NODEFILE:"
+echo "-----------------------------"
+cat $PBS_NODEFILE
+echo "-----------------------------"
+CORES=`/bin/awk 'END {print NR}' $PBS_NODEFILE`
+echo "Running on $CORES cores."
+echo "Starting run at: `date`"
+module load root-cern/6.14.04-gcc52 geant4/10.4-p02-threads
+export OMP_NUM_THREADS=$CORES
+LD_PRELOAD=/home/rahmans/remoll-root/remoll_30_01_2019/build-raster/libremoll.so root -q -b -l /home/rahmans/analysis/BeampipeAnalysis/analyse/analyse.C'("real_conf4",2000,"neutron", "midene" )'
+root -q -b -l /home/rahmans/analysis/BeampipeAnalysis/analyse/overlay.C'("real_conf4",20000000,"neutron", "midene")'
+echo "Program analysis finished with exit code $? at: `date`"

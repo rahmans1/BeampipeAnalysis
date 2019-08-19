@@ -1,0 +1,22 @@
+#include "remolltypes.hh"
+using namespace ROOT;
+
+int overlay(TString conf, Int_t nEvents,TString particle, TString energy){
+
+TFile f(Form("/global/scratch/rahmans/root/beampipeStudy/%s_%d_%s.root",conf.Data(),nEvents,particle.Data()));
+
+
+TCanvas c("c","c",800,600);
+c.Print(Form("%s_%d_%s.pdf[", conf.Data(),nEvents,particle.Data()), "pdf");
+for(auto&& keyAsObj:*f.GetListOfKeys()){
+   c.cd();
+   c.SetLogz();
+   auto obj=(TKey*) keyAsObj;
+   auto hist=  f.Get(obj->GetName());
+   hist->Draw("colz");
+   c.Print(Form("%s_%d_%s.pdf",conf.Data(),nEvents,particle.Data()));
+}
+c.Print(Form("%s_%d_%s.pdf]",conf.Data(),nEvents,particle.Data()), "pdf");
+
+return 0;
+}
