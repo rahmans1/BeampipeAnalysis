@@ -31,6 +31,6 @@ jsubf.write("root -q -b -l "+jsub+"/overlay.C'(\""+tag+"\","+str(n)+",\""+partic
 jsubf.write("echo \"Program analysis finished with exit code $? at: `date`\"\n")
 jsubf.close()
 	                                
-os.system("qsub -l nodes=1:ppn=4,pmem=4gb,walltime=1:30:00 "+jsub+"/jsub/"+tag+"_"+event+"_"+particle+"_"+energy+".pbs")
+os.system("qsub -l nodes=1:ppn=4,pmem=4gb,walltime=1:40:00 "+jsub+"/jsub/"+tag+"_"+event+"_"+particle+"_"+energy+".pbs")
 							
 

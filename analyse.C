@@ -17,6 +17,11 @@ TH2D rz("rz", "hit.r vs hit.z, bpipe [1/e/mm^2]", 29500, 0, 29500, 250, 0, 250);
 TH2D rz_pdep("rz_pdep", "(hit.r vs hit.z)*hit.edep, bpipe [MeV/e/mm^2]", 29500, 0, 29500, 250, 0, 250);
 TH2D rz_pin("rz_pin", "(hit.r vs hit.z)*hit.p, bpipe [MeV/e/mm^2]", 29500, 0, 29500, 250, 0, 250);
 
+TH2D vrvz("vrvz", "hit.vr vs hit.vz, bpipe [1/e/mm^2]", 29500, 0, 29500, 250, 0, 250);
+TH2D vrvz_pdep("vrvz_pdep", "(hit.vr vs hit.vz)*hit.edep, bpipe [MeV/e/mm^2]", 29500, 0, 29500, 250, 0, 250);
+TH2D vrvz_pin("vrvz_pin", "(hit.vr vs hit.vz)*hit.p, bpipe [MeV/e/mm^2]", 29500, 0, 29500, 250, 0, 250);
+
+
 TH2D rvz("rvz","(hit.r vs hit.vz), det [1/e/mm^2]", 29500, 0, 29500, 1900, 0, 1900);
 TH2D rvz_p("rvz_p","(hit.r vs hit.vz)*hit.p, det [MeV/e/mm^2]", 29500, 0, 29500, 1900, 0, 1900);
 
@@ -33,9 +38,9 @@ TH2D xy_rcut_p("xy_rcut_p", "(hit.x vs hit.y)*hit.p, det and 50cm<=hit.r<=190cm 
 std::map<TString, Float_t> hit_e_max={{"all", 6500}, {"lowene",10}, {"midene",100}, {"highene", 6500}};
 std::map<TString, Float_t> hit_e_min={{"all", 0}, {"lowene",0}, {"midene",10}, {"highene", 100}};
 std::map<TString, Float_t> hit_e_bin={{"all", 10}, {"lowene",0.1}, {"midene",1}, {"highene", 10}};
-TH1D ke_rcut("ke_rcut", Form("hit.p, det and 50cm<=hit.r<=190cm [1/e/%fMeV]",hit_e_bin[energy]), (Int_t) (hit_e_max[energy]-hit_e_min[energy])/hit_e_bin[energy], hit_e_min[energy], hit_e_max[energy]);
+TH1D ke_rcut("ke_rcut", Form("hit.p, det and 50cm<=hit.r<=190cm [1/e/%3.3fMeV]",hit_e_bin[energy]), (Int_t) (hit_e_max[energy]-hit_e_min[energy])/hit_e_bin[energy], hit_e_min[energy], hit_e_max[energy]);
 TH1D r_rcut("r_rcut", "hit.r, det and 50cm<=hit.r<=190cm [1/e/mm]", 1400,500,1900); 
-
+TH1D r("r","hit.r, det [1/e/mm]",1900,0,1900);
 
 std::vector<remollGenericDetectorHit_t>  *fHit=0;
 T.SetBranchAddress("hit", &fHit);
@@ -58,6 +63,7 @@ for (size_t j=0;j< nEvents;j++){
                 if (hit_planedet){
                          rvz.Fill(hit.vz, hit.r, weight);
 			 rvz_p.Fill(hit.vz, hit.r, weight*hit.p);
+                         r.Fill(hit.r,weight);
  	               if(hit_radial){
                          rvz_rcut.Fill(hit.vz, hit.r, weight);
                          rvz_rcut_p.Fill(hit.vz, hit.r, weight*hit.p);
@@ -73,6 +79,9 @@ for (size_t j=0;j< nEvents;j++){
                          rz.Fill(hit.z,hit.r, weight);
                          rz_pdep.Fill(hit.z, hit.r, weight*hit.edep);
                          rz_pin.Fill(hit.z,hit.r, weight*hit.p);
+                         vrvz.Fill(hit.vz,sqrt(hit.vx*hit.vx+hit.vy*hit.vy), weight);
+                         vrvz_pdep.Fill(hit.vz, sqrt(hit.vx*hit.vx+hit.vy*hit.vy), weight*hit.edep);
+                         vrvz_pin.Fill(hit.vz, sqrt(hit.vx*hit.vx+hit.vy*hit.vy), weight*hit.p);
 		}
 
        }
@@ -83,6 +92,12 @@ rvz.Write("",TObject::kOverwrite);
 rvz_p.Write("", TObject::kOverwrite);
 rvz_rcut.Write("", TObject::kOverwrite);
 rvz_rcut_p.Write("", TObject::kOverwrite);
+r.Write("",TObject::kOverwrite);
+
+vrvz.Write("", TObject::kOverwrite);
+vrvz_pdep.Write("", TObject::kOverwrite);
+vrvz_pin.Write("", TObject::kOverwrite);
+
 rz.Write("", TObject::kOverwrite);
 rz_pdep.Write("", TObject::kOverwrite);
 rz_pin.Write("", TObject::kOverwrite);
